@@ -37,7 +37,7 @@ class BxlWebUsb {
 
         var setEndPoint = function() {
             return new Promise(function(resolve, reject) {
-                me._device.configuration.interface[0].alternate.endpoints.forEach(function(e) {
+                me._device.configuration.interfaces[0].alternate.endpoints.forEach(function(e) {
                     if(e.direction == 'in') {
                         me._endPointIn = e;
                     }
