@@ -22,11 +22,16 @@ function updateFirmware() {
         if (selectedFile.size == array.length) {
             var usb = new BxlWebUsb();
 
+            var discoonectCallback = function(result, error) {
+                alert("펌웨어 업데이트에 성공");
+                alert("LED의 붉은불이 꺼지면 작업을 재개");
+            }
+
             var writeCallback = function(result, error) {
                 if (result == false) {
                     alert("펌웨어 업데이트 실패");
                 }
-                usb.disconnect();
+                usb.disconnect(discoonectCallback);
             }
 
             var connectCallback = function(result, error) {
