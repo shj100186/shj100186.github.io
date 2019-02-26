@@ -10,10 +10,17 @@ class BxlWebUsb {
         var me = this;
 
         var getDevices = function() {
-            navigator.usb.requestDevice({ filters: [{ vendorId : 0x1504 }]})
-            .then(selectedDevice => {
-                me._device = selectedDevice;
-            })
+            return new Promise(function(resolve, reject) {
+                navigator.usb.requestDevice({ filters: [{ vendorId : 0x1504 }]})
+                .then(selectedDevice => {
+                    me._device = selectedDevice;
+                    resolve();
+                })
+                .catch(() => {
+                    reject();
+                })
+            });
+
         };
 
         var openDevice = function() {
