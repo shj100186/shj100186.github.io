@@ -1,7 +1,7 @@
 
 document.getElementById('updateFirmware').addEventListener('click', updateFirmware);
 
-function updateFirmware() {    
+function updateFirmware() {
     var selectedFile = document.getElementById('firmwarePath').files[0];
 
     if (selectedFile == undefined || 
@@ -20,18 +20,25 @@ function updateFirmware() {
         var array = new Uint8Array(reader.result);
         console.log(array.length);
         if (selectedFile.size == array.length) {
-            bxlAPI.updateFirmware(array, 
-                function(result) {
-                    if(result.error_code == 0) {
-                        log(0, "Firmware update success");
-                    } else {
-                        log(0, "Update fail");
-                    }
-                },
-                function(progress) {
-                    console.log(progress);
+            var usb = new BxlWebUsb();
+
+            var writeCallback = function(result, error) {
+                if (result == false) {
+                    alert("펌웨어 업데이트 실패");
                 }
-            );
+                usb.disconnect();
+            }
+
+            var connectCallback = function(result, error) {
+                if (result == false) {
+                    alert("연결실패");
+                    return;
+                }
+
+                usb.write(array, writeCallback);
+            }
+
+            usb.connect(connectCallback);
         }
     };
     reader.readAsArrayBuffer(selectedFile);
