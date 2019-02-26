@@ -96,7 +96,15 @@ class BxlWebUsb {
             me._endPointIn = undefined;
             me._endPointOut = undefined;
             me._device = undefined;
+
+            if(callback != undefined) {
+                callback(true);
+            }
         })
-        .catch(function(err) { console.log(err); });
+        .catch(function(err) { 
+            if (callback != undefined) {
+                callback(false, err);
+            }
+        });
     }
 }
