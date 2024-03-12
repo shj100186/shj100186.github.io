@@ -1,5 +1,5 @@
 import { QueryClient, useQuery } from '@tanstack/vue-query';
-import { ref, watch } from 'vue';
+import { ref, watchEffect } from 'vue';
 
 interface Todo {
   id: number;
@@ -16,7 +16,7 @@ async function fetchTodoById(id: number): Promise<Todo> {
         id: id,
         title: `title ${a++}`,
       });
-    }, 1000);
+    }, 5000);
   });
 }
 
@@ -38,14 +38,19 @@ export const useTodo = (id:number) => {
   // loading
   const { isLoading:_isLoading, isFetching, isPending, isRefetching } = query
   const isLoading = ref<boolean>(false)
-  watch([_isLoading, isFetching, isPending, isRefetching], (values) => {
-    isLoading.value = values.includes(true)
+  watchEffect(() => {
+    isLoading.value = [_isLoading.value, isFetching.value, isPending.value, isRefetching.value].includes(true)
   })
 
   // refetch
   const refetch = async () => {
-    await queryClient.invalidateQueries({queryKey}) // 상황에 따라 queryFN 실행
-    // await queryClient.refetchQueries({queryKey}) // 무조건 queryFN 실행
+    // 삭제 후 갱신하려 하면 실패함
+    queryClient.removeQueries({queryKey})
+
+    // 상황에 따라 queryFN 실행
+    // await queryClient.invalidateQueries({queryKey}) 
+    // 무조건 queryFN 실행(?)
+    await queryClient.refetchQueries({queryKey})
   }
 
   // remove
