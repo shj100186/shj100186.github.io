@@ -1,0 +1,32 @@
+declare global {
+  interface Window {
+    authentication:{
+      requestAuthentication: () => Promise<string>,
+      responseAuthentication: (authentication: string) => void
+    }
+  }
+}
+
+window.authentication = (() => {  
+
+  let response:((authentication:string) => void) | undefined = undefined
+
+  const requestAuthentication = () => {
+    return new Promise<string>((resolve, reject) => {
+      response = (authentication) => {
+        resolve(authentication)
+      }
+    })
+  }
+  
+  const responseAuthentication = (authentication:string) => {
+    response?(authentication)
+  }
+
+  return {
+    requestAuthentication,
+    responseAuthentication
+  }
+})();
+
+await window.authentication.requestAuthentication(window.responseAuthentication)
